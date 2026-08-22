@@ -894,7 +894,10 @@ function BlockPainter({
       </div>
       <div className="paint-body">
         <div className="lunch-guide" aria-hidden="true">
-          <span>점심시간</span>
+          <span>
+            <b>🍚🥄 이 시간만큼은 비워둘까요?</b>
+            <small>점심은 꼭 챙겨 먹어요! 😋</small>
+          </span>
         </div>
         <aside>
           {scheduleSlots.map((slot) => (
