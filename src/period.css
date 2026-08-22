@@ -1,5 +1,5 @@
 .period-painter .paint-head{grid-template-columns:105px repeat(5,1fr)}
-.period-painter .paint-body{height:570px;grid-template-columns:105px repeat(5,1fr)}
+.period-painter .paint-body{height:570px;grid-template-columns:105px repeat(5,1fr);position:relative}
 .period-painter .paint-body>aside,.period-painter .paint-day{grid-template-rows:repeat(15,1fr)}
 .period-painter .paint-body>aside span{display:flex;align-items:center;gap:5px;padding:0 6px;font-size:7px;text-align:left}
 .period-painter .paint-body>aside span b{font-size:8px;min-width:28px}
@@ -7,6 +7,8 @@
 .period-painter .night{background:#edf0ff}
 .period-painter .paint-day>button:nth-child(11),.period-painter .paint-body>aside span:nth-child(11){border-top:3px solid #7984bc}
 .period-painter .paint-day>button.blocked{background:linear-gradient(135deg,#ff7a83,#ef5e6b);border-color:#e95360}
+.period-painter .lunch-guide{position:absolute;z-index:2;pointer-events:none;left:105px;right:0;top:20%;height:13.3333%;border-top:2px dashed #e7aa45;border-bottom:2px dashed #e7aa45;background:#fff7d61f}
+.period-painter .lunch-guide>span{position:absolute;left:-78px;top:50%;transform:translateY(-50%);width:66px;padding:4px 5px;border:1px dashed #e7aa45;border-radius:12px;background:#fffaf0;color:#c98112;font-size:8px;font-weight:800;text-align:center}
 .narrow>section:first-of-type .section-title p::after{content:'실제 주간 10교시와 야간 5교시 기준으로 선택할 수 있어요.'}
 .paint-legend>b{font-size:0}.paint-legend>b::after{content:'선택한 교시는 빨간색으로 표시돼요';font-size:8px}
 @media(max-width:760px){.period-painter{overflow-x:auto}.period-painter .paint-head,.period-painter .paint-body{min-width:560px}.period-painter .paint-body{height:520px}}

@@ -893,6 +893,9 @@ function BlockPainter({
         ))}
       </div>
       <div className="paint-body">
+        <div className="lunch-guide" aria-hidden="true">
+          <span>점심시간</span>
+        </div>
         <aside>
           {scheduleSlots.map((slot) => (
             <span className={slot.type} key={slot.id}>
