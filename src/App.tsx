@@ -19,7 +19,6 @@ import {
   Search,
   Sparkles,
   Star,
-  Sun,
   X,
   Zap,
 } from "lucide-react";
@@ -118,7 +117,7 @@ const pickGuidePages = [
       [
         "8",
         "시간표와 요약 확인",
-        "총학점·등교일·점심 확보율·공강시간·이동시간·오전수업을 한 번에 확인하세요.",
+        "총학점·등교일·공강시간·이동시간과 포함된 강의를 한 번에 확인하세요.",
       ],
       [
         "9",
@@ -1320,8 +1319,8 @@ function saveScheduleImage(
   ctx.font = '500 17px "Noto Sans KR", sans-serif';
   ctx.fillText(
     isStuff
-      ? `총 ${result.courses.length}과목  ·  점심시간 확보 ${result.lunchRate}%  ·  공강 ${min(result.gapMinutes)}`
-      : `점심시간 확보 ${result.lunchRate}%  ·  오전수업 ${result.morningCount}회  ·  포함 강의 ${result.courses.length}개`,
+      ? `총 ${result.courses.length}과목  ·  공강 ${min(result.gapMinutes)}`
+      : `총학점 ${result.credits}학점  ·  공강 ${min(result.gapMinutes)}  ·  포함 강의 ${result.courses.length}개`,
     110,
     1142,
   );
@@ -1351,8 +1350,13 @@ function saveStuffedScheduleImage(current: Course[], added: Course[]) {
       return (
         total +
         meetings.slice(1).reduce(
-          (sum, meeting, index) =>
-            sum + Math.max(0, Math.round((meeting.start - meetings[index].end) * 60)),
+          (sum, meeting, index) => {
+            const gap = Math.max(
+              0,
+              Math.round((meeting.start - meetings[index].end) * 60),
+            );
+            return sum + (gap > 10 ? gap : 0);
+          },
           0,
         )
       );
@@ -1388,6 +1392,9 @@ function MoveDetails({ result }: { result: ScheduleResult }) {
         <Footprints /> 연강 이동시간{" "}
         {result.moveDetails.length > 0 && <b>총 {result.moveMinutes}분</b>}
       </h3>
+      <p className="move-update-note">
+        ※ 연강 이동시간은 8월 26일까지 업데이트될 예정입니다.
+      </p>
       {result.moveDetails.length ? (
         result.moveDetails.map((m, i) => (
           <div key={`${m.day}-${i}`}>
@@ -1490,10 +1497,8 @@ function Results({
               {[
                 [GraduationCap, r.credits, "학점", "총 학점"],
                 [CalendarDays, r.days, "일", "등교일"],
-                [Sun, r.lunchRate, "%", "점심 확보"],
                 [Clock3, min(r.gapMinutes), "", "총 공강"],
                 [Footprints, r.moveMinutes, "분", "이동시간"],
-                [Zap, r.morningCount, "회", "오전 수업"],
               ].map(([Icon, val, unit, label]: any) => (
                 <article>
                   <Icon />
@@ -1505,6 +1510,9 @@ function Results({
                 </article>
               ))}
             </div>
+            <p className="move-update-note">
+              ※ 이동시간은 8월 26일까지 업데이트될 예정입니다.
+            </p>
           </section>
           <MoveDetails result={r} />
           <section className="included">
