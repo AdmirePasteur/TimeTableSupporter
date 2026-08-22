@@ -1411,7 +1411,7 @@ function MoveDetails({ result }: { result: ScheduleResult }) {
               <b>{m.toBuilding}</b>
               <small>{m.toCourse}</small>
             </span>
-            <em>약 {m.minutes}분</em>
+            <em>{m.minutes ? `약 ${m.minutes}분` : "0분"}</em>
           </div>
         ))
       ) : (
