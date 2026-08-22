@@ -1,0 +1,13 @@
+.period-painter .paint-head{grid-template-columns:105px repeat(5,1fr)}
+.period-painter .paint-body{height:570px;grid-template-columns:105px repeat(5,1fr)}
+.period-painter .paint-body>aside,.period-painter .paint-day{grid-template-rows:repeat(15,1fr)}
+.period-painter .paint-body>aside span{display:flex;align-items:center;gap:5px;padding:0 6px;font-size:7px;text-align:left}
+.period-painter .paint-body>aside span b{font-size:8px;min-width:28px}
+.period-painter .day{background:#fff9dc}
+.period-painter .night{background:#edf0ff}
+.period-painter .paint-day>button:nth-child(11),.period-painter .paint-body>aside span:nth-child(11){border-top:3px solid #7984bc}
+.period-painter .paint-day>button.blocked{background:linear-gradient(135deg,#ff7a83,#ef5e6b);border-color:#e95360}
+.narrow>section:first-of-type .section-title p::after{content:'실제 주간 10교시와 야간 5교시 기준으로 선택할 수 있어요.'}
+.paint-legend>b{font-size:0}.paint-legend>b::after{content:'선택한 교시는 빨간색으로 표시돼요';font-size:8px}
+@media(max-width:760px){.period-painter{overflow-x:auto}.period-painter .paint-head,.period-painter .paint-body{min-width:560px}.period-painter .paint-body{height:520px}}
+.upload-row{display:flex;align-items:center;gap:10px;margin-bottom:14px}.upload-button{display:flex;align-items:center;gap:9px;border:1px dashed #8d7ee8;background:#f8f6ff;color:#6253cf;border-radius:11px;padding:10px 14px;cursor:pointer}.upload-button>svg{width:20px}.upload-button span b,.upload-button span small{display:block}.upload-button span b{font-size:11px}.upload-button span small{font-size:8px;color:#9289c7}.upload-button input{display:none}.upload-notice{display:flex;align-items:center;gap:7px;padding:10px 12px;border-radius:9px;font-size:9px}.upload-notice svg{width:14px}.upload-notice.ok{background:#eaf8f3;color:#27866d}.upload-notice.error{background:#fff0f1;color:#db5361}.upload-row>a{margin-left:auto;color:#7770bb;font-size:9px;text-decoration:none;border-bottom:1px solid #aaa2dc}.upload-row>a:hover{color:#5f4ed1}@media(max-width:760px){.upload-row{align-items:stretch;flex-wrap:wrap}.upload-button{width:100%;justify-content:center}.upload-notice{flex:1}.upload-row>a{margin-left:0;padding:8px}}
