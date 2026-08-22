@@ -1414,10 +1414,12 @@ function Results({
   rs,
   back,
   reset,
+  useInStuff,
 }: {
   rs: ScheduleResult[];
   back: () => void;
   reset: () => void;
+  useInStuff: (selected: Course[]) => void;
 }) {
   const [tab, setTab] = useState(0),
     r = rs[tab];
@@ -1544,8 +1546,8 @@ function Results({
           >
             <Download /> 이미지로 저장
           </button>
-          <button className="primary">
-            <CalendarDays /> 이 시간표로 선택
+          <button className="primary" onClick={() => useInStuff(r.courses)}>
+            <Zap /> 쑤셔넣기에 가져가기
           </button>
         </div>
       </div>
@@ -1781,6 +1783,15 @@ export default function App() {
       )
         return;
       choose(next);
+    },
+    useScheduleInStuff = (selected: Course[]) => {
+      setIds(new Set(selected.map((course) => course.id)));
+      setRequired(new Set());
+      setBlocked(new Set());
+      setRs([]);
+      setMode("stuff");
+      setStep(2);
+      window.scrollTo({ top: 0, behavior: "smooth" });
     };
   return (
     <>
@@ -1805,7 +1816,12 @@ export default function App() {
       )}{" "}
       {mode === "pick" && step === 3 && <Loading done={() => setStep(4)} />}{" "}
       {mode === "pick" && step === 4 && (
-        <Results rs={rs} back={() => setStep(2)} reset={home} />
+        <Results
+          rs={rs}
+          back={() => setStep(2)}
+          reset={home}
+          useInStuff={useScheduleInStuff}
+        />
       )}{" "}
       {mode === "stuff" && step === 2 && (
         <StuffResults ids={ids} back={() => setStep(1)} home={home} />
