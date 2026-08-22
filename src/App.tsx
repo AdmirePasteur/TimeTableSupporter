@@ -1032,7 +1032,39 @@ function Settings({
           않아요.
         </p>
       </div>
-      <section>
+      <section className="optimization-section">
+        <div className="section-title">
+          <i>
+            <Check />
+          </i>
+          <span>
+            <h2>
+              추가 최적화 조건 <em>먼저 선택</em>
+            </h2>
+            <p>
+              원하는 조건만 체크하세요. 선택한 조건은 동일한 비중으로
+              계산됩니다.
+            </p>
+          </span>
+        </div>
+        <div className="global-checks">
+          {globalConditions.map(({ key, label, desc, icon: Icon }) => (
+            <button
+              className={enabled.has(key) ? "on" : ""}
+              onClick={() => toggleGlobal(key)}
+              key={key}
+            >
+              <i>{enabled.has(key) && <Check />}</i>
+              <Icon />
+              <span>
+                <b>{label}</b>
+                <small>{desc}</small>
+              </span>
+            </button>
+          ))}
+        </div>
+      </section>
+      <section className="availability-section">
         <div className="section-title">
           <i>
             <CalendarDays />
@@ -1075,36 +1107,6 @@ function Settings({
             </span>
           </div>
         )}
-      </section>
-      <section>
-        <div className="section-title">
-          <i>
-            <Check />
-          </i>
-          <span>
-            <h2>추가 최적화 조건</h2>
-            <p>
-              원하는 조건만 체크하세요. 선택한 조건은 동일한 비중으로
-              계산됩니다.
-            </p>
-          </span>
-        </div>
-        <div className="global-checks">
-          {globalConditions.map(({ key, label, desc, icon: Icon }) => (
-            <button
-              className={enabled.has(key) ? "on" : ""}
-              onClick={() => toggleGlobal(key)}
-              key={key}
-            >
-              <i>{enabled.has(key) && <Check />}</i>
-              <Icon />
-              <span>
-                <b>{label}</b>
-                <small>{desc}</small>
-              </span>
-            </button>
-          ))}
-        </div>
       </section>
       <section>
         <div className="section-title">
