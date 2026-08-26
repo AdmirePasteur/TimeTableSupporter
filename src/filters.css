@@ -1241,6 +1241,36 @@
   color: #6250d7;
   background: #eeebf8;
 }
+.back-to-top {
+  position: fixed;
+  z-index: 20;
+  right: max(18px, calc((100vw - 1240px) / 2));
+  bottom: 24px;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border: 1px solid #ded8f5;
+  border-radius: 50%;
+  background: #6c5ce7;
+  color: #fff;
+  box-shadow: 0 8px 22px #4938a942;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(10px);
+  transition: opacity .18s, visibility .18s, transform .18s, background .18s;
+}
+.back-to-top.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+.back-to-top:hover {
+  background: #5948d2;
+}
+.back-to-top svg {
+  width: 20px;
+}
 @media (min-width: 1200px) {
   .stuff-catalog .stuff-recommend-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1264,6 +1294,12 @@
   }
 }
 @media (max-width: 600px) {
+  .back-to-top {
+    right: 14px;
+    bottom: 98px;
+    width: 42px;
+    height: 42px;
+  }
   .stuff-result-actions {
     width: 100%;
   }

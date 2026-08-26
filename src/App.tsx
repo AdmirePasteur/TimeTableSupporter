@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import {
   ArrowLeft,
   ArrowRight,
+  ArrowUp,
   BookOpen,
   CalendarDays,
   Check,
@@ -1630,6 +1631,26 @@ function ModeSelect({ choose }: { choose: (mode: ServiceMode) => void }) {
     </main>
   );
 }
+function BackToTop() {
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const update = () => setVisible(window.scrollY > 500);
+    update();
+    window.addEventListener("scroll", update, { passive: true });
+    return () => window.removeEventListener("scroll", update);
+  }, []);
+  return (
+    <button
+      type="button"
+      className={`back-to-top ${visible ? "show" : ""}`}
+      aria-label="맨 위로 이동"
+      title="맨 위로"
+      onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+    >
+      <ArrowUp />
+    </button>
+  );
+}
 function StuffResults({
   ids,
   back,
@@ -1781,6 +1802,9 @@ export default function App() {
       new Set<GlobalCondition>(["credits"]),
     ),
     [rs, setRs] = useState<ScheduleResult[]>([]);
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "auto" });
+  }, [mode, step]);
   const generate = () => {
       setRs(
         optimize(
@@ -1861,6 +1885,7 @@ export default function App() {
       {mode === "stuff" && step === 2 && (
         <StuffResults ids={ids} back={() => setStep(1)} home={home} />
       )}
+      <BackToTop />
       <footer className="site-footer">
         © 2026 {mode === "stuff" ? "쑤셔넣는" : "골라담는"} 시간표{" "}
         <span>더 나은 캠퍼스 라이프를 위해</span>
