@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 import { courses } from "./data";
 import {
+  calculateConsecutiveTravel,
   courseHitsBlocked,
   coursesClash,
   GlobalCondition,
@@ -1400,7 +1401,7 @@ function saveStuffedScheduleImage(current: Course[], added: Course[]) {
     addedCount: added.length,
   });
 }
-function MoveDetails({ result }: { result: ScheduleResult }) {
+function MoveDetails({ result }: { result: Pick<ScheduleResult, "moveMinutes" | "moveDetails"> }) {
   return (
     <section className="move-details">
       <h3>
@@ -1645,6 +1646,10 @@ function StuffResults({
     added = useMemo(
       () => courses.filter((c) => addedIds.has(c.id)),
       [addedIds],
+    ),
+    stuffTravel = useMemo(
+      () => calculateConsecutiveTravel([...current, ...added]),
+      [current, added],
     );
   const available = useMemo(
       () =>
@@ -1722,6 +1727,11 @@ function StuffResults({
         </div>
         <Table list={[...current, ...added]} />
         {added.length > 0 && <div className="stuff-added-list">{added.map(course=><button key={course.id} onClick={()=>toggleAdded(course)}><i style={{background:course.color}}/><span><b>{course.name}</b><small>{courseTime(course)}</small></span><X/></button>)}</div>}
+        {stuffTravel.moveDetails.length > 0 && (
+          <div className="stuff-travel">
+            <MoveDetails result={stuffTravel} />
+          </div>
+        )}
       </section>
       <section className="stuff-catalog">
       <div className="tools stuff-tools">

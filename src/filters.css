@@ -1169,6 +1169,17 @@
   margin-bottom: 0;
   min-width: 0;
 }
+.stuff-travel {
+  margin-top: 12px;
+  padding: 13px 14px;
+  border: 1px solid #e8e4f3;
+  border-radius: 12px;
+  background: #fff;
+}
+.stuff-travel .move-details h3 {
+  margin: 0 0 11px;
+  font-size: 11px;
+}
 .stuff-catalog {
   min-width: 0;
   max-height: calc(100vh - 175px);

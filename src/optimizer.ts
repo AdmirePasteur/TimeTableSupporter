@@ -22,11 +22,29 @@ export const scheduleSlots=[
 const clashes=(a:Course,b:Course)=>a.meetings.some(x=>b.meetings.some(y=>x.day===y.day&&x.start<y.end&&y.start<x.end))
 export const coursesClash=clashes
 export const courseHitsBlocked=(course:Course,blocked:Set<string>)=>course.meetings.some(m=>scheduleSlots.some(slot=>blocked.has(`${m.day}-${slot.id}`)&&m.start<slot.end&&m.end>slot.start))
+export function calculateConsecutiveTravel(picked:Course[]){
+ const grouped=new Map<Day,Course['meetings']>();days.forEach(d=>grouped.set(d,[]));picked.forEach(c=>c.meetings.forEach(m=>grouped.get(m.day)!.push(m)))
+ let moveMinutes=0
+ const moveDetails:ScheduleResult['moveDetails']=[]
+ days.forEach(day=>{
+  const meetings=grouped.get(day)!.sort((a,b)=>a.start-b.start)
+  meetings.forEach((meeting,index)=>{
+   if(!index)return
+   const previous=meetings[index-1],gap=Math.max(0,Math.round((meeting.start-previous.end)*60))
+   if(gap>10)return
+   const minutes=buildingTravelTime(previous.building,meeting.building)
+   if(minutes!==null)moveMinutes+=minutes
+   const from=picked.find(course=>course.meetings.includes(previous)),to=picked.find(course=>course.meetings.includes(meeting))
+   moveDetails.push({day,fromCourse:from?.name??'',toCourse:to?.name??'',fromBuilding:previous.building,toBuilding:meeting.building,minutes})
+  })
+ })
+ return{moveMinutes,moveDetails}
+}
 function evaluate(picked:Course[],all:Course[],enabled:Set<GlobalCondition>):ScheduleResult{
  const grouped=new Map<Day,Course['meetings']>();days.forEach(d=>grouped.set(d,[]));picked.forEach(c=>c.meetings.forEach(m=>grouped.get(m.day)!.push(m)))
- let gaps=0,moves=0,morning=0,lunch=0,active=0
- const moveDetails:ScheduleResult['moveDetails']=[]
- days.forEach(d=>{const ms=grouped.get(d)!.sort((a,b)=>a.start-b.start);if(!ms.length)return;active++;if(!ms.some(m=>m.start<13&&m.end>12))lunch++;ms.forEach((m,i)=>{if(m.start<10)morning++;if(i){const prev=ms[i-1],gap=Math.max(0,Math.round((m.start-prev.end)*60));if(gap>10)gaps+=gap;if(gap<=10){const minutes=buildingTravelTime(prev.building,m.building);if(minutes!==null)moves+=minutes;const from=picked.find(c=>c.meetings.includes(prev)),to=picked.find(c=>c.meetings.includes(m));moveDetails.push({day:d,fromCourse:from?.name??'',toCourse:to?.name??'',fromBuilding:prev.building,toBuilding:m.building,minutes})}}})})
+ let gaps=0,morning=0,lunch=0,active=0
+ days.forEach(d=>{const ms=grouped.get(d)!.sort((a,b)=>a.start-b.start);if(!ms.length)return;active++;if(!ms.some(m=>m.start<13&&m.end>12))lunch++;ms.forEach((m,i)=>{if(m.start<10)morning++;if(i){const prev=ms[i-1],gap=Math.max(0,Math.round((m.start-prev.end)*60));if(gap>10)gaps+=gap}})})
+ const {moveMinutes:moves,moveDetails}=calculateConsecutiveTravel(picked)
  const credits=picked.reduce((s,c)=>s+c.credits,0),lunchRate=active?Math.round(lunch/active*100):0
  const scores:Record<GlobalCondition,number>={credits:Math.min(1,credits/18),gaps:Math.max(0,1-gaps/600),days:Math.max(0,1-(active-2)/3)}
  const quality=enabled.size?[...enabled].reduce((s,k)=>s+scores[k],0)/enabled.size:.5
