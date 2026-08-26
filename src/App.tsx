@@ -1405,7 +1405,7 @@ function MoveDetails({ result }: { result: ScheduleResult }) {
         {result.moveDetails.length > 0 && <b>총 {travelTime(result.moveMinutes)}</b>}
       </h3>
       <p className="move-data-note">
-        강의실 코드의 건물 구간을 기준으로 계산한 이동시간이에요.
+        연강 사이를 걸어서 이동한 기준이에요. 10분 이상은 빨간색으로 표시해요.
       </p>
       {result.moveDetails.length ? (
         result.moveDetails.map((m, i) => (
@@ -1420,7 +1420,9 @@ function MoveDetails({ result }: { result: ScheduleResult }) {
               <b>{m.toBuilding}</b>
               <small>{m.toCourse}</small>
             </span>
-            <em>{m.minutes === null ? "정보 없음" : travelTime(m.minutes)}</em>
+            <em className={m.minutes !== null && m.minutes >= 10 ? "long" : ""}>
+              {m.minutes === null ? "정보 없음" : travelTime(m.minutes)}
+            </em>
           </div>
         ))
       ) : (
@@ -1763,7 +1765,7 @@ export default function App() {
     [required, setRequired] = useState(new Set<string>()),
     [blocked, setBlocked] = useState(new Set<string>()),
     [enabled, setEnabled] = useState(
-      new Set<GlobalCondition>(["credits", "gaps", "days"]),
+      new Set<GlobalCondition>(["credits"]),
     ),
     [rs, setRs] = useState<ScheduleResult[]>([]);
   const generate = () => {
@@ -1782,7 +1784,7 @@ export default function App() {
       setIds(new Set());
       setRequired(new Set());
       setBlocked(new Set());
-      setEnabled(new Set(["credits", "gaps", "days"]));
+      setEnabled(new Set<GlobalCondition>(["credits"]));
       setRs([]);
     },
     home = () => {
