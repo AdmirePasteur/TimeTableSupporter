@@ -388,7 +388,6 @@ function CourseCard({
   selectedText = "후보 강의에 담김",
   disabled = false,
   disabledText = "시간이 겹쳐 선택할 수 없어요",
-  signal = false,
 }: {
   c: Course;
   on: boolean;
@@ -396,11 +395,10 @@ function CourseCard({
   selectedText?: string;
   disabled?: boolean;
   disabledText?: string;
-  signal?: boolean;
 }) {
   return (
     <button
-      className={`course ${on ? "selected" : ""} ${disabled ? "course-disabled" : ""} ${signal ? "conflict-signal" : ""}`}
+      className={`course ${on ? "selected" : ""} ${disabled ? "course-disabled" : ""}`}
       onClick={click}
       disabled={disabled}
     >
@@ -438,7 +436,9 @@ function CourseCard({
           <Check /> {selectedText}
         </strong>
       )}
-      {disabled && <strong className="conflict-text">{disabledText}</strong>}
+      {disabled && disabledText && (
+        <strong className="conflict-text">{disabledText}</strong>
+      )}
     </button>
   );
 }
@@ -686,17 +686,7 @@ function Select({
 }) {
   const [q, setQ] = useState(""),
     [cat, setCat] = useState("전체"),
-    [selectedGroups, setSelectedGroups] = useState(new Set<string>()),
-    [error, setError] = useState(""),
-    [conflictId, setConflictId] = useState("");
-  useEffect(() => {
-    if (!error) return;
-    const timer = window.setTimeout(() => {
-      setError("");
-      setConflictId("");
-    }, 3500);
-    return () => window.clearTimeout(timer);
-  }, [error, conflictId]);
+    [selectedGroups, setSelectedGroups] = useState(new Set<string>());
   const groups =
       cat === "전공"
         ? [
@@ -717,38 +707,20 @@ function Select({
           c.professor.includes(q) ||
           c.code.toLowerCase().includes(q.toLowerCase())),
     ),
+    chosen = courses.filter((course) => ids.has(course.id)),
     toggle = (id: string) => {
       const x = new Set(ids);
       if (x.has(id)) {
         x.delete(id);
-        setError("");
       } else {
         const target = courses.find((c) => c.id === id)!;
-        const conflicting =
-          mode === "stuff"
-            ? courses
-                .filter((c) => x.has(c.id))
-                .find((c) => coursesClash(c, target))
-            : undefined;
-        if (conflicting) {
-          const overlap = target.meetings.find((meeting) =>
-            conflicting.meetings.some(
-              (other) =>
-                meeting.day === other.day &&
-                meeting.start < other.end &&
-                other.start < meeting.end,
-            ),
-          );
-          const detail = overlap
-            ? `${overlap.day} ${tm(overlap.start)}–${tm(overlap.end)} · `
-            : "";
-          setConflictId("");
-          window.requestAnimationFrame(() => setConflictId(id));
-          setError(`${detail}${conflicting.name}과 시간이 겹쳐 선택할 수 없어요.`);
+        if (
+          mode === "stuff" &&
+          courses.filter((c) => x.has(c.id)).some((c) => coursesClash(c, target))
+        ) {
           return;
         }
         x.add(id);
-        setError("");
       }
       setIds(x);
     },
@@ -793,13 +765,7 @@ function Select({
       {stuff && <OcrImport ids={ids} setIds={setIds} />}
       {stuff && (
         <div className="stuff-selection-note">
-          <Info /> 현재 강의 선택 단계에서는 시간이 겹치는 강의를 함께 선택할 수 없어요.
-        </div>
-      )}
-      {error && (
-        <div className="selection-error">
-          <Info />
-          {error}
+          <Info /> 연하게 표시된 강의는 선택한 과목과 시간이 겹쳐 담을 수 없어요.
         </div>
       )}
       <div className="tools course-tools">
@@ -858,16 +824,24 @@ function Select({
         </div>
       )}
       <div className="course-grid">
-        {list.map((c) => (
-          <CourseCard
-            key={c.id}
-            c={c}
-            on={ids.has(c.id)}
-            click={() => toggle(c.id)}
-            signal={conflictId === c.id}
-            selectedText={stuff ? "현재 수강 과목" : "후보 강의에 담김"}
-          />
-        ))}
+        {list.map((c) => {
+          const selected = ids.has(c.id),
+            disabled =
+              stuff &&
+              !selected &&
+              chosen.some((course) => coursesClash(course, c));
+          return (
+            <CourseCard
+              key={c.id}
+              c={c}
+              on={selected}
+              click={() => toggle(c.id)}
+              disabled={disabled}
+              disabledText=""
+              selectedText={stuff ? "현재 수강 과목" : "후보 강의에 담김"}
+            />
+          );
+        })}
       </div>
       <div className="dock">
         <div className="bag">
