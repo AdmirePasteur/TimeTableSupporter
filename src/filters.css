@@ -1146,14 +1146,14 @@
   align-items: center;
   gap: 8px;
 }
-.move-update-note {
+.move-data-note {
   margin-top: 9px !important;
-  color: #e5485f !important;
+  color: #7569bd !important;
   font-size: 8px !important;
   font-weight: 700;
   line-height: 1.5;
 }
-.move-details > .move-update-note {
+.move-details > .move-data-note {
   margin: -4px 0 10px !important;
 }
 .stuff-workspace > .stuff-preview {

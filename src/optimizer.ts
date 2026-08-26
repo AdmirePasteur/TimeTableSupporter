@@ -1,4 +1,5 @@
 import { Course, Day, ScheduleResult } from './types'
+import { buildingTravelTime } from './buildingTravelTimes'
 const days:Day[]=['월','화','수','목','금']
 export type GlobalCondition='credits'|'gaps'|'days'
 export const scheduleSlots=[
@@ -25,7 +26,7 @@ function evaluate(picked:Course[],all:Course[],enabled:Set<GlobalCondition>):Sch
  const grouped=new Map<Day,Course['meetings']>();days.forEach(d=>grouped.set(d,[]));picked.forEach(c=>c.meetings.forEach(m=>grouped.get(m.day)!.push(m)))
  let gaps=0,moves=0,morning=0,lunch=0,active=0
  const moveDetails:ScheduleResult['moveDetails']=[]
- days.forEach(d=>{const ms=grouped.get(d)!.sort((a,b)=>a.start-b.start);if(!ms.length)return;active++;if(!ms.some(m=>m.start<13&&m.end>12))lunch++;ms.forEach((m,i)=>{if(m.start<10)morning++;if(i){const prev=ms[i-1],gap=Math.max(0,Math.round((m.start-prev.end)*60));if(gap>10)gaps+=gap;if(gap<=10){const minutes=0;moves+=minutes;const from=picked.find(c=>c.meetings.includes(prev)),to=picked.find(c=>c.meetings.includes(m));moveDetails.push({day:d,fromCourse:from?.name??'',toCourse:to?.name??'',fromBuilding:prev.building,toBuilding:m.building,minutes})}}})})
+ days.forEach(d=>{const ms=grouped.get(d)!.sort((a,b)=>a.start-b.start);if(!ms.length)return;active++;if(!ms.some(m=>m.start<13&&m.end>12))lunch++;ms.forEach((m,i)=>{if(m.start<10)morning++;if(i){const prev=ms[i-1],gap=Math.max(0,Math.round((m.start-prev.end)*60));if(gap>10)gaps+=gap;if(gap<=10){const minutes=buildingTravelTime(prev.building,m.building);if(minutes!==null)moves+=minutes;const from=picked.find(c=>c.meetings.includes(prev)),to=picked.find(c=>c.meetings.includes(m));moveDetails.push({day:d,fromCourse:from?.name??'',toCourse:to?.name??'',fromBuilding:prev.building,toBuilding:m.building,minutes})}}})})
  const credits=picked.reduce((s,c)=>s+c.credits,0),lunchRate=active?Math.round(lunch/active*100):0
  const scores:Record<GlobalCondition,number>={credits:Math.min(1,credits/18),gaps:Math.max(0,1-gaps/600),days:Math.max(0,1-(active-2)/3)}
  const quality=enabled.size?[...enabled].reduce((s,k)=>s+scores[k],0)/enabled.size:.5

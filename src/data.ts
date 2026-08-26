@@ -15,4 +15,3 @@ const sampleCourses: Course[] = [
  {id:'c12',code:'PE101-04',name:'생활체육',professor:'문태호',credits:1,category:'일반',color:'#7BB661',meetings:[{day:'금',start:9,end:11,building:'체육관'}]},
 ]
 export const courses:Course[]=generatedCourses.length?generatedCourses:sampleCourses
-export const buildingDistance:Record<string,Record<string,number>>={공학관:{공학관:0,IT관:5,자연관:6,인문관:12,사회관:10,체육관:15},IT관:{공학관:5,IT관:0,자연관:8,인문관:14,사회관:9,체육관:12},자연관:{공학관:6,IT관:8,자연관:0,인문관:9,사회관:7,체육관:11},인문관:{공학관:12,IT관:14,자연관:9,인문관:0,사회관:5,체육관:8},사회관:{공학관:10,IT관:9,자연관:7,인문관:5,사회관:0,체육관:9},체육관:{공학관:15,IT관:12,자연관:11,인문관:8,사회관:9,체육관:0}}

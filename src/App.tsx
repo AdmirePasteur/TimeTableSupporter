@@ -68,6 +68,12 @@ const courseTime = (c: Course) =>
   c.meetings.map((m) => `${m.day} ${tm(m.start)}–${tm(m.end)}`).join(" · ");
 const min = (n: number) =>
   n >= 60 ? `${Math.floor(n / 60)}시간 ${n % 60 || ""}분` : `${n}분`;
+const travelTime = (minutes: number) => {
+  const seconds = Math.round(minutes * 60),
+    wholeMinutes = Math.floor(seconds / 60),
+    remainingSeconds = seconds % 60;
+  return `${wholeMinutes ? `${wholeMinutes}분` : ""}${remainingSeconds ? ` ${remainingSeconds}초` : ""}`.trim() || "0분";
+};
 const pickGuidePages = [
   {
     title: "강의 담기 & 조건 설정",
@@ -1396,10 +1402,10 @@ function MoveDetails({ result }: { result: ScheduleResult }) {
     <section className="move-details">
       <h3>
         <Footprints /> 연강 이동시간{" "}
-        {result.moveDetails.length > 0 && <b>총 {result.moveMinutes}분</b>}
+        {result.moveDetails.length > 0 && <b>총 {travelTime(result.moveMinutes)}</b>}
       </h3>
-      <p className="move-update-note">
-        ※ 연강 이동시간은 8월 26일까지 업데이트될 예정입니다.
+      <p className="move-data-note">
+        강의실 코드의 건물 구간을 기준으로 계산한 이동시간이에요.
       </p>
       {result.moveDetails.length ? (
         result.moveDetails.map((m, i) => (
@@ -1414,7 +1420,7 @@ function MoveDetails({ result }: { result: ScheduleResult }) {
               <b>{m.toBuilding}</b>
               <small>{m.toCourse}</small>
             </span>
-            <em>{m.minutes ? `약 ${m.minutes}분` : "0분"}</em>
+            <em>{m.minutes === null ? "정보 없음" : travelTime(m.minutes)}</em>
           </div>
         ))
       ) : (
@@ -1504,7 +1510,7 @@ function Results({
                 [GraduationCap, r.credits, "학점", "총 학점"],
                 [CalendarDays, r.days, "일", "등교일"],
                 [Clock3, min(r.gapMinutes), "", "총 공강"],
-                [Footprints, r.moveMinutes, "분", "이동시간"],
+                [Footprints, travelTime(r.moveMinutes), "", "이동시간"],
               ].map(([Icon, val, unit, label]: any) => (
                 <article>
                   <Icon />
@@ -1516,8 +1522,8 @@ function Results({
                 </article>
               ))}
             </div>
-            <p className="move-update-note">
-              ※ 이동시간은 8월 26일까지 업데이트될 예정입니다.
+            <p className="move-data-note">
+              강의실 코드 기준 건물 간 이동시간을 합산했어요.
             </p>
           </section>
           <MoveDetails result={r} />
