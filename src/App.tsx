@@ -388,6 +388,7 @@ function CourseCard({
   selectedText = "후보 강의에 담김",
   disabled = false,
   disabledText = "시간이 겹쳐 선택할 수 없어요",
+  signal = false,
 }: {
   c: Course;
   on: boolean;
@@ -395,10 +396,11 @@ function CourseCard({
   selectedText?: string;
   disabled?: boolean;
   disabledText?: string;
+  signal?: boolean;
 }) {
   return (
     <button
-      className={`course ${on ? "selected" : ""} ${disabled ? "course-disabled" : ""}`}
+      className={`course ${on ? "selected" : ""} ${disabled ? "course-disabled" : ""} ${signal ? "conflict-signal" : ""}`}
       onClick={click}
       disabled={disabled}
     >
@@ -685,7 +687,16 @@ function Select({
   const [q, setQ] = useState(""),
     [cat, setCat] = useState("전체"),
     [selectedGroups, setSelectedGroups] = useState(new Set<string>()),
-    [error, setError] = useState("");
+    [error, setError] = useState(""),
+    [conflictId, setConflictId] = useState("");
+  useEffect(() => {
+    if (!error) return;
+    const timer = window.setTimeout(() => {
+      setError("");
+      setConflictId("");
+    }, 3500);
+    return () => window.clearTimeout(timer);
+  }, [error, conflictId]);
   const groups =
       cat === "전공"
         ? [
@@ -713,13 +724,27 @@ function Select({
         setError("");
       } else {
         const target = courses.find((c) => c.id === id)!;
-        if (
-          mode === "stuff" &&
-          courses
-            .filter((c) => x.has(c.id))
-            .some((c) => coursesClash(c, target))
-        ) {
-          setError(`${target.name} 과목은 현재 선택한 수업과 시간이 겹쳐요.`);
+        const conflicting =
+          mode === "stuff"
+            ? courses
+                .filter((c) => x.has(c.id))
+                .find((c) => coursesClash(c, target))
+            : undefined;
+        if (conflicting) {
+          const overlap = target.meetings.find((meeting) =>
+            conflicting.meetings.some(
+              (other) =>
+                meeting.day === other.day &&
+                meeting.start < other.end &&
+                other.start < meeting.end,
+            ),
+          );
+          const detail = overlap
+            ? `${overlap.day} ${tm(overlap.start)}–${tm(overlap.end)} · `
+            : "";
+          setConflictId("");
+          window.requestAnimationFrame(() => setConflictId(id));
+          setError(`${detail}${conflicting.name}과 시간이 겹쳐 선택할 수 없어요.`);
           return;
         }
         x.add(id);
@@ -766,6 +791,11 @@ function Select({
         </aside>
       </div>
       {stuff && <OcrImport ids={ids} setIds={setIds} />}
+      {stuff && (
+        <div className="stuff-selection-note">
+          <Info /> 현재 강의 선택 단계에서는 시간이 겹치는 강의를 함께 선택할 수 없어요.
+        </div>
+      )}
       {error && (
         <div className="selection-error">
           <Info />
@@ -834,6 +864,7 @@ function Select({
             c={c}
             on={ids.has(c.id)}
             click={() => toggle(c.id)}
+            signal={conflictId === c.id}
             selectedText={stuff ? "현재 수강 과목" : "후보 강의에 담김"}
           />
         ))}

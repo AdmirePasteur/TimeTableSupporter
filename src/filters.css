@@ -737,6 +737,33 @@
 .selection-error svg {
   width: 15px;
 }
+.stuff-selection-note {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0 0 12px;
+  padding: 9px 12px;
+  border-radius: 9px;
+  background: #fff7f8;
+  color: #d65365;
+  font-size: 10px;
+  font-weight: 700;
+}
+.stuff-selection-note svg {
+  width: 14px;
+  flex: none;
+}
+.course.conflict-signal {
+  border-color: #ef5b70;
+  background: #fff7f8;
+  box-shadow: 0 0 0 3px #ffdde2;
+  animation: conflict-shake .34s ease-in-out 2;
+}
+@keyframes conflict-shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
 .stuff-preview {
   background: #fff;
   border: 1px solid #e5e2eb;
