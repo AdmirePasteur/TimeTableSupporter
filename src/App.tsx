@@ -1203,7 +1203,7 @@ function Table({ list }: { list: Course[] }) {
                   }}
                 >
                   <b>{c.name}</b>
-                  <small>{m.building}</small>
+                    <small>{c.code} · {m.building}</small>
                 </div>
               )),
           )}
@@ -1322,7 +1322,7 @@ function saveScheduleImage(
       ctx.font = '700 16px "Noto Sans KR", sans-serif';
       ctx.fillText(course.name, x + 12, y + 25);
       ctx.font = '500 13px "Noto Sans KR", sans-serif';
-      ctx.fillText(meeting.building, x + 12, y + 47);
+      ctx.fillText(`${course.code} · ${meeting.building}`, x + 12, y + 47);
       ctx.restore();
     }),
   );
