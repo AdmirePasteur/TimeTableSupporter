@@ -92,11 +92,12 @@ for table in tree.iter('TableControl'):
         if area.upper()=='CELL' or code in CELL_CODES:
             skipped+=1; skipped_records.append({'제외 이유':'CELL 과목(서비스 제외)','과목코드':code,'과목명':name,'분반':section,'강의시간':schedule,'교수':professor,'강의실':room}); continue
         requirement=next((value for value in reversed(cells[:code_index]) if value in {'전공필수','전공선택'}),'') if category=='전공' else ''
-        records.append({'id':f'{code}-{section}-{len(records)}','code':f'{code}-{section}','name':name,'professor':professor or '미정','credits':credits,'category':category,'department':department or '학과 미지정','area':area or '영역 미지정','requirement':requirement or ('이수구분 미지정' if category=='전공' else ''),'meetings':parsed,'color':COLORS[len(records)%len(COLORS)]})
+        grade=next((value for value in cells[:code_index] if re.fullmatch(r'[1-4](?:\s*[,~·/]\s*[1-4])*',value)),'') if category=='전공' else ''
+        records.append({'id':f'{code}-{section}-{len(records)}','code':f'{code}-{section}','name':name,'professor':professor or '미정','credits':credits,'category':category,'department':department or '학과 미지정','area':area or '영역 미지정','requirement':requirement or ('이수구분 미지정' if category=='전공' else ''),'grade':grade,'meetings':parsed,'color':COLORS[len(records)%len(COLORS)]})
 
 manual=[
- {'id':'EE2004-00-manual','code':'EE2004-00','name':'영어교육수업연구','professor':'박은정','credits':1,'category':'전공','department':'영어교육과','area':'영역 미지정','requirement':'전공선택','meetings':[{'day':'수','start':11,'end':12+50/60,'building':'E30203'}],'color':'#5B8DEF'},
- {'id':'ST2012-00-manual','code':'ST2012-00','name':'창업실습2','professor':'최정민','credits':3,'category':'전공','department':'학과 미지정','area':'영역 미지정','requirement':'전공선택','meetings':[{'day':'월','start':18,'end':20+25/60,'building':'강의실 미정'},{'day':'수','start':20.5,'end':22+5/60,'building':'강의실 미정'}],'color':'#EF7A65'},
+ {'id':'EE2004-00-manual','code':'EE2004-00','name':'영어교육수업연구','professor':'박은정','credits':1,'category':'전공','department':'영어교육과','area':'영역 미지정','requirement':'전공선택','grade':'3','meetings':[{'day':'수','start':11,'end':12+50/60,'building':'E30203'}],'color':'#5B8DEF'},
+ {'id':'ST2012-00-manual','code':'ST2012-00','name':'창업실습2','professor':'최정민','credits':3,'category':'전공','department':'학과 미지정','area':'영역 미지정','requirement':'전공선택','grade':'4','meetings':[{'day':'월','start':18,'end':20+25/60,'building':'강의실 미정'},{'day':'수','start':20.5,'end':22+5/60,'building':'강의실 미정'}],'color':'#EF7A65'},
 ]
 existing={r['code'] for r in records}; records.extend(r for r in manual if r['code'] not in existing)
 

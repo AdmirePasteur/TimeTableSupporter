@@ -409,6 +409,9 @@ function CourseCard({
             {c.requirement}
           </em>
         )}
+        {c.category === "전공" && c.grade && (
+          <small className="course-grade">{c.grade}학년</small>
+        )}
         <small>{c.credits}학점</small>
         <span>{on && <Check />}</span>
       </div>

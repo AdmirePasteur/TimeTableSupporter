@@ -197,6 +197,13 @@
 .course > div > small {
   margin-left: 0;
 }
+.course > div > small.course-grade {
+  padding: 3px 6px;
+  border-radius: 5px;
+  background: #f5f3ff;
+  color: #7465cf;
+  font-weight: 700;
+}
 .data-notice {
   max-width: 1100px;
   margin: 18px auto -22px;
