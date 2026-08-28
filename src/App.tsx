@@ -35,6 +35,13 @@ import {
 import { Course, Day, ScheduleResult } from "./types";
 const days: Day[] = ["월", "화", "수", "목", "금"];
 type ServiceMode = "pick" | "stuff";
+const groupedGeneralCourseNames = new Set([
+  "명저읽기", "사고와글쓰기", "데이터와코딩", "커뮤니케이션영어",
+  "커뮤니케이션중국어", "커뮤니케이션일본어", "디지털추론과문제해결",
+  "디지털실무및활용", "디지털응용", "대학수학", "일반물리학", "일반화학",
+  "화학및실험I", "미래설계Ⅱ", "영어회화", "영어회화2",
+]);
+const normalizedCourseName = (name: string) => name.replace(/\s+/g, "");
 const globalConditions: {
   key: GlobalCondition;
   label: string;
@@ -442,6 +449,95 @@ function CourseCard({
     </button>
   );
 }
+function GroupedCourseCard({
+  group,
+  ids,
+  toggle,
+  stuff,
+  chosen,
+}: {
+  group: Course[];
+  ids: Set<string>;
+  toggle: (id: string) => void;
+  stuff: boolean;
+  chosen: Course[];
+}) {
+  const [open, setOpen] = useState(false),
+    sorted = [...group].sort((a, b) => {
+      const am = a.meetings[0], bm = b.meetings[0];
+      return (
+        days.indexOf(am.day) - days.indexOf(bm.day) ||
+        am.start - bm.start ||
+        a.professor.localeCompare(b.professor, "ko")
+      );
+    }),
+    selectedCount = group.filter((course) => ids.has(course.id)).length,
+    representative = group[0];
+  return (
+    <div className={`grouped-course ${open ? "open" : ""}`}>
+      <button
+        type="button"
+        className={`course group-summary ${selectedCount ? "selected" : ""}`}
+        onClick={() => setOpen((value) => !value)}
+        aria-expanded={open}
+      >
+        <div>
+          <em>{representative.category}</em>
+          <small>{representative.credits}학점</small>
+          <span><ChevronDown /></span>
+        </div>
+        <h3>{representative.name}</h3>
+        <p>교수님·시간별 분반을 펼쳐서 선택하세요</p>
+        <footer>
+          <label><BookOpen /> {group.length}개 분반</label>
+          <label>{selectedCount ? `${selectedCount}개 담김` : "분반 보기"}</label>
+        </footer>
+      </button>
+      {open && (
+        <button
+          type="button"
+          className="section-picker-backdrop"
+          aria-label="분반 선택창 닫기"
+          onClick={() => setOpen(false)}
+        />
+      )}
+      <section className="section-picker" aria-label={`${representative.name} 분반 목록`}>
+        <header>
+          <div>
+            <b>{representative.name}</b>
+            <small>{group.length}개 분반 · 요일과 시간순</small>
+          </div>
+          <button type="button" onClick={() => setOpen(false)} aria-label="닫기"><X /></button>
+        </header>
+        <div>
+          {sorted.map((course) => {
+            const selected = ids.has(course.id),
+              disabled =
+                stuff &&
+                !selected &&
+                chosen.some((other) => coursesClash(other, course));
+            return (
+              <button
+                type="button"
+                key={course.id}
+                className={selected ? "selected" : ""}
+                disabled={disabled}
+                onClick={() => toggle(course.id)}
+              >
+                <i>{selected && <Check />}</i>
+                <span>
+                  <b>{course.professor} 교수</b>
+                  <small>{course.code} · {courseTime(course)}</small>
+                  <small><MapPin /> {course.meetings[0].building}</small>
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </section>
+    </div>
+  );
+}
 async function prepareOcrImage(file: File) {
   try {
     const bitmap = await createImageBitmap(file),
@@ -734,6 +830,17 @@ function Select({
       setSelectedGroups(x);
     },
     stuff = mode === "stuff";
+  const groupedItems: (Course | Course[])[] = [], seenGroups = new Set<string>();
+  list.forEach((course) => {
+    const key = normalizedCourseName(course.name);
+    if (!groupedGeneralCourseNames.has(key)) {
+      groupedItems.push(course);
+      return;
+    }
+    if (seenGroups.has(key)) return;
+    seenGroups.add(key);
+    groupedItems.push(list.filter((item) => normalizedCourseName(item.name) === key));
+  });
   return (
     <main>
       <div className="hero">
@@ -824,7 +931,20 @@ function Select({
         </div>
       )}
       <div className="course-grid">
-        {list.map((c) => {
+        {groupedItems.map((item) => {
+          if (Array.isArray(item)) {
+            return (
+              <GroupedCourseCard
+                key={`group-${normalizedCourseName(item[0].name)}`}
+                group={item}
+                ids={ids}
+                toggle={toggle}
+                stuff={stuff}
+                chosen={chosen}
+              />
+            );
+          }
+          const c = item;
           const selected = ids.has(c.id),
             disabled =
               stuff &&

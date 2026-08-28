@@ -274,12 +274,217 @@
 .course > strong {
   display: none;
 }
+.grouped-course {
+  position: relative;
+  min-width: 0;
+}
+.grouped-course > .group-summary {
+  width: 100%;
+  height: 100%;
+}
+.group-summary > div > span svg {
+  transition: transform .18s;
+}
+.grouped-course.open .group-summary > div > span svg {
+  transform: rotate(180deg);
+}
+.group-summary footer label:last-child {
+  color: #6856dc;
+  font-weight: 800;
+}
+.section-picker {
+  position: absolute;
+  z-index: 31;
+  top: 10px;
+  left: calc(100% - 8px);
+  width: min(430px, calc(100vw - 32px));
+  overflow: hidden;
+  border: 1px solid #ddd7f3;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 18px 45px #28204433;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(8px);
+  pointer-events: none;
+  transition: opacity .16s, visibility .16s, transform .16s;
+}
+.grouped-course:hover > .section-picker,
+.grouped-course.open > .section-picker {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(0);
+  pointer-events: auto;
+}
+.section-picker > header {
+  height: auto;
+  min-height: 58px;
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 0;
+  border-bottom: 1px solid #eeeaf5;
+  background: #faf9ff;
+}
+.section-picker > header > div {
+  min-width: 0;
+}
+.section-picker > header b,
+.section-picker > header small {
+  display: block;
+}
+.section-picker > header b {
+  font-size: 13px;
+}
+.section-picker > header small {
+  margin-top: 2px;
+  color: #928c9e;
+  font-size: 9px;
+}
+.section-picker > header button {
+  margin-left: auto;
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  flex: none;
+  border: 0;
+  border-radius: 8px;
+  background: #f0edfa;
+}
+.section-picker > header button svg {
+  width: 15px;
+}
+.section-picker > div {
+  max-height: 390px;
+  overflow-y: auto;
+  padding: 7px;
+  scrollbar-width: thin;
+}
+.section-picker > div > button {
+  width: 100%;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 9px 8px;
+  border: 0;
+  border-bottom: 1px solid #f0edf5;
+  border-radius: 8px;
+  background: #fff;
+  text-align: left;
+}
+.section-picker > div > button:hover,
+.section-picker > div > button.selected {
+  background: #f5f2ff;
+}
+.section-picker > div > button:disabled {
+  cursor: not-allowed;
+  opacity: .38;
+  background: #f5f4f6;
+}
+.section-picker > div > button > i {
+  width: 21px;
+  height: 21px;
+  display: grid;
+  place-items: center;
+  flex: none;
+  border: 1px solid #d9d5e3;
+  border-radius: 6px;
+  color: #fff;
+}
+.section-picker > div > button.selected > i {
+  border-color: #6c5ce7;
+  background: #6c5ce7;
+}
+.section-picker > div > button > i svg {
+  width: 13px;
+}
+.section-picker > div > button > span {
+  min-width: 0;
+}
+.section-picker > div > button b,
+.section-picker > div > button small {
+  display: block;
+}
+.section-picker > div > button b {
+  font-size: 10px;
+}
+.section-picker > div > button small {
+  margin-top: 2px;
+  color: #8d8997;
+  font-size: 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.section-picker > div > button small svg {
+  width: 10px;
+  vertical-align: -2px;
+}
+.section-picker-backdrop {
+  display: none;
+}
+@media (min-width: 1201px) {
+  .course-grid > .grouped-course:nth-child(4n+3) > .section-picker,
+  .course-grid > .grouped-course:nth-child(4n+4) > .section-picker {
+    right: calc(100% - 8px);
+    left: auto;
+  }
+}
+@media (min-width: 801px) and (max-width: 1200px) {
+  .course-grid > .grouped-course:nth-child(3n+3) > .section-picker {
+    right: calc(100% - 8px);
+    left: auto;
+  }
+}
+@media (min-width: 601px) and (max-width: 800px) {
+  .course-grid > .grouped-course:nth-child(2n) > .section-picker {
+    right: calc(100% - 8px);
+    left: auto;
+  }
+}
 @media (max-width: 430px) {
   .course > footer {
     align-items: flex-start;
   }
   .course > footer label:first-child {
     white-space: normal;
+  }
+}
+@media (max-width: 600px) {
+  .section-picker-backdrop {
+    position: fixed;
+    z-index: 29;
+    inset: 0;
+    display: block;
+    border: 0;
+    background: #211b3566;
+  }
+  .section-picker,
+  .grouped-course:hover > .section-picker {
+    position: fixed;
+    z-index: 30;
+    top: auto;
+    right: 10px;
+    bottom: 10px;
+    left: 10px;
+    width: auto;
+    max-height: 72vh;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(18px);
+    pointer-events: none;
+  }
+  .grouped-course.open > .section-picker {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+  .section-picker > div {
+    max-height: calc(72vh - 58px);
   }
 }
 @media (min-width: 1201px) {
