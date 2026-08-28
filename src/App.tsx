@@ -474,11 +474,14 @@ function GroupedCourseCard({
     selectedCount = group.filter((course) => ids.has(course.id)).length,
     representative = group[0];
   return (
-    <div className={`grouped-course ${open ? "open" : ""}`}>
+    <div
+      className={`grouped-course ${open ? "open" : ""}`}
+      onMouseEnter={() => setOpen(true)}
+    >
       <button
         type="button"
         className={`course group-summary ${selectedCount ? "selected" : ""}`}
-        onClick={() => setOpen((value) => !value)}
+        onClick={() => setOpen(true)}
         aria-expanded={open}
       >
         <div>
