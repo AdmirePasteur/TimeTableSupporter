@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowLeft,
   ArrowRight,
@@ -463,6 +463,7 @@ function GroupedCourseCard({
   chosen: Course[];
 }) {
   const [open, setOpen] = useState(false),
+    closeTimer = useRef<number | null>(null),
     sorted = [...group].sort((a, b) => {
       const am = a.meetings[0], bm = b.meetings[0];
       return (
@@ -473,10 +474,26 @@ function GroupedCourseCard({
     }),
     selectedCount = group.filter((course) => ids.has(course.id)).length,
     representative = group[0];
+  const cancelClose = () => {
+      if (closeTimer.current !== null) window.clearTimeout(closeTimer.current);
+      closeTimer.current = null;
+    },
+    scheduleClose = (delay = 420) => {
+      cancelClose();
+      closeTimer.current = window.setTimeout(() => {
+        setOpen(false);
+        closeTimer.current = null;
+      }, delay);
+    };
+  useEffect(() => () => cancelClose(), []);
   return (
     <div
       className={`grouped-course ${open ? "open" : ""}`}
-      onMouseEnter={() => setOpen(true)}
+      onMouseEnter={() => {
+        cancelClose();
+        setOpen(true);
+      }}
+      onMouseLeave={() => scheduleClose()}
     >
       <button
         type="button"
@@ -504,7 +521,12 @@ function GroupedCourseCard({
           onClick={() => setOpen(false)}
         />
       )}
-      <section className="section-picker" aria-label={`${representative.name} 분반 목록`}>
+      <section
+        className="section-picker"
+        aria-label={`${representative.name} 분반 목록`}
+        onMouseEnter={cancelClose}
+        onMouseLeave={() => scheduleClose(160)}
+      >
         <header>
           <div>
             <b>{representative.name}</b>
